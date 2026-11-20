@@ -63,16 +63,28 @@ def analyze_xray_with_gemini(image: Image.Image) -> XRayScreeningResult:
         "or pleural effusion) versus clear normal lung parenchyma. "
         "Provide a structured screening assessment."
     )
-    response = gemini_client.models.generate_content(
-        model="gemini-3.8-flash",
-        contents=[image, prompt],
-        config=types.GenerateContentConfig(
-            response_mime_type="application/json",
-            response_schema=XRayScreeningResult,
-            temperature=0.1,
-        ),
-    )
-    return XRayScreeningResult.model_validate_json(response.text)
+    candidate_models = [
+        "gemini-3.8-flash",
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite",
+    ]
+    last_error = None
+    for model_name in candidate_models:
+        try:
+            response = gemini_client.models.generate_content(
+                model=model_name,
+                contents=[image, prompt],
+                config=types.GenerateContentConfig(
+                    response_mime_type="application/json",
+                    response_schema=XRayScreeningResult,
+                    temperature=0.1,
+                ),
+            )
+            return XRayScreeningResult.model_validate_json(response.text)
+        except Exception as err:
+            last_error = err
+            continue
+    raise RuntimeError(f"All Gemini models busy: {last_error}")
 
 
 def log_scan_to_supabase(
