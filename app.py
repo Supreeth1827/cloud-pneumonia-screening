@@ -57,6 +57,10 @@ except Exception:
 
 # --- Helper Functions ---
 def analyze_xray_with_gemini(image: Image.Image) -> XRayScreeningResult:
+    # Resize large radiographs so cloud API inference completes in ~2 seconds
+    resized_image = image.copy()
+    resized_image.thumbnail((768, 768))
+
     prompt = (
         "You are an AI radiology screening assistant analyzing a frontal chest X-ray radiograph. "
         "Evaluate the lung fields for signs of pneumonia (such as focal consolidation, infiltrates, "
@@ -64,16 +68,16 @@ def analyze_xray_with_gemini(image: Image.Image) -> XRayScreeningResult:
         "Provide a structured screening assessment."
     )
     candidate_models = [
-        "gemini-3.8-flash",
         "gemini-3.5-flash",
         "gemini-3.5-flash-lite",
+        "gemini-3.8-flash",
     ]
     last_error = None
     for model_name in candidate_models:
         try:
             response = gemini_client.models.generate_content(
                 model=model_name,
-                contents=[image, prompt],
+                contents=[resized_image, prompt],
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
                     response_schema=XRayScreeningResult,
