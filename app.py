@@ -152,19 +152,19 @@ if input_mode == "Upload Chest X-Ray" and uploaded_file is not None:
     selected_image = Image.open(uploaded_file).convert("RGB")
     source_label = uploaded_file.name
 elif input_mode == "Demo Sample: Normal":
-    sample_path = os.path.join("sample_xrays", "normal_sample.jpg")
+    sample_path = os.path.join("sample_xrays", "normal_sample.jpeg")
     if os.path.exists(sample_path):
         selected_image = Image.open(sample_path).convert("RGB")
-        source_label = "sample_normal.jpg"
+        source_label = "sample_normal.jpeg"
     else:
-        st.warning("Add `sample_xrays/normal_sample.jpg` to your repo to use this preset.")
+        st.warning("Add `sample_xrays/normal_sample.jpeg` to your repo to use this preset.")
 elif input_mode == "Demo Sample: Pneumonia":
-    sample_path = os.path.join("sample_xrays", "pneumonia_sample.jpg")
+    sample_path = os.path.join("sample_xrays", "pneumonia_sample.jpeg")
     if os.path.exists(sample_path):
         selected_image = Image.open(sample_path).convert("RGB")
-        source_label = "sample_pneumonia.jpg"
+        source_label = "sample_pneumonia.jpeg"
     else:
-        st.warning("Add `sample_xrays/pneumonia_sample.jpg` to your repo to use this preset.")
+        st.warning("Add `sample_xrays/pneumonia_sample.jpeg` to your repo to use this preset.")
 
 # --- Main Workspace ---
 col1, col2 = st.columns([1, 1.2], gap="large")
